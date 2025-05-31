@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Finder</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.9/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .slide-active {
+      animation: slideActive 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform, opacity, box-shadow;
+    }
+    .slide-next {
+      animation: slideNext 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+      transform: scale(0.75);
+      opacity: 0.7;
+      will-change: transform, opacity;
+    }
+    @keyframes slideActive {
+      0% {
+        transform: translateX(100%) scale(0.95) rotate(2deg);
+        opacity: 0;
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      }
+      50% {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+      100% {
+        transform: translateX(0) scale(1) rotate(0deg);
+        opacity: 1;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+    @keyframes slideNext {
+      0% {
+        transform: translateX(50%) scale(0.7) rotate(-2deg);
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateX(0) scale(0.75) rotate(0deg);
+        opacity: 0.7;
+      }
+    }
+    [data-theme="light"] {
+      background-color: #E8F0E9;
+      color: #3E5879;
+    }
+    [data-theme="dark"] {
+      background-color: #3E5879;
+      color: #FFFFFF;
+    }
+    .nav-bg-light {
+      background-color: #A3BFFA;
+    }
+    .nav-bg-dark {
+      background-color: #2D4373;
+    }
+    .footer-bg-light {
+      background-color: #FBB6CE;
+    }
+    .footer-bg-dark {
+      background-color: #4A6A9A;
+    }
+    .icon-light {
+      color: #41644A;
+    }
+    .icon-dark {
+      color: #E8F0E9;
+    }
+    .hover-green:hover {
+      background-color: #C7DBBF;
+      color: #3E5879;
+    }
+    .icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    .news-container-light {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .news-container-dark {
+      background-color: rgba(62, 88, 121, 0.2);
+    }
+  </style>
+</head>
+<body className="transition-colors duration-300">
+  <div id="root"></div>
+  <script type="text/babel">
+    function App() {
+      const [darkMode, setDarkMode] = React.useState(false);
+      const [currentSlide, setCurrentSlide] = React.useState(0);
+      const [animate, setAnimate] = React.useState(false);
+
+      // Toggle dark mode
+      const toggleDarkMode = () => {
+        setDarkMode(!darkMode);
+        document.documentElement.setAttribute('data-theme', !darkMode ? 'dark' : 'light');
+      };
+
+      // Sample slides data (replace with real school data)
+      const slides = [
+        { id: 1, title: "Springfield High", img: "https://via.placeholder.com/600x400?text=School+1", desc: "Top-rated public school" },
+        { id: 2, title: "Riverside Academy", img: "https://via.placeholder.com/600x400?text=School+2", desc: "Known for arts programs" },
+        { id: 3, title: "Oakwood College", img: "https://via.placeholder.com/600x400?text=School+3", desc: "Excellent STEM courses" },
+      ];
+
+      // Handle slide navigation
+      const nextSlide = () => {
+        setAnimate(true);
+        setTimeout(() => {
+          setCurrentSlide((prev) => (prev + 1) % slides.length);
+          setAnimate(false);
+        }, 50);
+      };
+
+      const prevSlide = () => {
+        setAnimate(true);
+        setTimeout(() => {
+          setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+          setAnimate(false);
+        }, 50);
+      };
+
+      // Get next slide index
+      const nextSlideIndex = (currentSlide + 1) % slides.length;
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* Navigation Bar */}
+          <nav className={darkMode ? "nav-bg-dark p-4 shadow-lg" : "nav-bg-light p-4 shadow-lg"}>
+            <div className="container mx-auto flex justify-between items-center">
+              <button
+                onClick={toggleDarkMode}
+                className={darkMode ? "p-2 rounded-full bg-[#E8F0E9] text-gray-800 hover-green transition flex items-center space-x-2" : "p-2 rounded-full bg-[#3E5879] text-white hover-green transition flex items-center space-x-2"}
+              >
+                {darkMode ? (
+                  <svg className={"icon icon-dark"} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className={"icon icon-light"} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+                <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+              </button>
+              <ul className="flex space-x-6 text-white">
+                <li><a href="#" className="hover:underline">Home</a></li>
+                <li><a href="#" className="hover:underline">About</a></li>
+                <li><a href="#" className="hover:underline">Contact</a></li>
+              </ul>
+            </div>
+          </nav>
+
+          {/* Search Box */}
+          <div className="container mx-auto my-8 px-4">
+            <input
+              type="text"
+              placeholder="Search for schools..."
+              className="w-full max-w-md mx-auto block p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+
+          {/* Slideshow */}
+          <div className="container mx-auto px-4 mb-8">
+            <div className="flex flex-col lg:flex-row items-center lg:items-start space-x-0 lg:space-x-4">
+              {/* Current Slide */}
+              <div className="relative w-full lg:w-3/5">
+                <div className={animate ? "slide-active" : ""}>
+                  <img
+                    src={slides[currentSlide].img}
+                    alt={slides[currentSlide].title}
+                    className="w-full h-96 object-cover rounded-lg shadow-lg"
+                  />
+                  <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-4 rounded">
+                    <h2 className="text-2xl font-bold">{slides[currentSlide].title}</h2>
+                    <p>{slides[currentSlide].desc}</p>
+                  </div>
+                </div>
+                {/* Navigation Arrows */}
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-[#41644A] p-2 rounded-full hover:bg-opacity-75"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-[#41644A] p-2 rounded-full hover:bg-opacity-75"
+                >
+                  →
+                </button>
+              </div>
+              {/* Next Slide */}
+              <div className="hidden lg:block w-2/5">
+                <div
+                  className={animate ? "slide-next cursor-pointer" : "cursor-pointer"}
+                  onClick={nextSlide}
+                >
+                  <img
+                    src={slides[nextSlideIndex].img}
+                    alt={slides[nextSlideIndex].title}
+                    className="w-full h-80 object-cover rounded-lg shadow"
+                  />
+                  <p className="mt-2 text-sm font-semibold text-center">{slides[nextSlideIndex].title}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* News Section */}
+          <div className="container mx-auto px-4 mb-8">
+            <div className={darkMode ? "news-container-dark p-6 rounded-lg" : "news-container-light p-6 rounded-lg"}>
+              <h2 className="text-2xl font-extrabold mb-4">News</h2>
+              <p className="text-base">
+                Stay updated with the latest happenings in our school community. From upcoming events to student achievements, our news section keeps you informed about everything exciting at our schools. Check back regularly for new updates and announcements.
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <footer className={darkMode ? "footer-bg-dark text-white py-6 mt-auto" : "footer-bg-light text-white py-6 mt-auto"}>
+            <div className="container mx-auto px-4 flex justify-center space-x-6">
+              <a href="#" className="hover:text-[#C7DBBF]">Facebook</a>
+              <a href="#" className="hover:text-[#C7DBBF]">Twitter</a>
+              <a href="#" className="hover:text-[#C7DBBF]">Instagram</a>
+              <a href="#" className="hover:text-[#C7DBBF]">Portfolio</a>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
