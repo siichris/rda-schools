@@ -14,38 +14,47 @@
       font-family: 'Inter', sans-serif;
     }
     .slide-active {
-      animation: slideActive 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform, opacity, box-shadow;
+      animation: slideActive 0.6s ease-in-out;
+      will-change: transform, opacity;
     }
     .slide-next {
-      animation: slideNext 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+      animation: slideNext 0.6s ease-in-out 0.05s;
       transform: scale(0.75);
       opacity: 0.7;
       will-change: transform, opacity;
     }
     @keyframes slideActive {
       0% {
-        transform: translateX(100%) scale(0.95) rotate(2deg);
+        transform: translateX(100%);
         opacity: 0;
-        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-      }
-      50% {
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
       }
       100% {
-        transform: translateX(0) scale(1) rotate(0deg);
+        transform: translateX(0);
         opacity: 1;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       }
     }
     @keyframes slideNext {
       0% {
-        transform: translateX(50%) scale(0.7) rotate(-2deg);
+        transform: translateX(50%) scale(0.75);
         opacity: 0.3;
       }
       100% {
-        transform: translateX(0) scale(0.75) rotate(0deg);
+        transform: translateX(0) scale(0.75);
         opacity: 0.7;
+      }
+    }
+    .slide-exit {
+      animation: slideExit 0.6s ease-in-out;
+      will-change: transform, opacity;
+    }
+    @keyframes slideExit {
+      0% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-100%);
+        opacity: 0;
       }
     }
     [data-theme="light"] {
@@ -63,7 +72,7 @@
       background-color: #2D4373;
     }
     .footer-bg-light {
-      background-color: #FBB6CE;
+      background-color: #B2DFDB;
     }
     .footer-bg-dark {
       background-color: #4A6A9A;
@@ -97,6 +106,7 @@
       const [darkMode, setDarkMode] = React.useState(false);
       const [currentSlide, setCurrentSlide] = React.useState(0);
       const [animate, setAnimate] = React.useState(false);
+      const [exitingSlide, setExitingSlide] = React.useState(null);
 
       // Toggle dark mode
       const toggleDarkMode = () => {
@@ -113,19 +123,23 @@
 
       // Handle slide navigation
       const nextSlide = () => {
+        setExitingSlide(slides[currentSlide]);
         setAnimate(true);
         setTimeout(() => {
           setCurrentSlide((prev) => (prev + 1) % slides.length);
           setAnimate(false);
-        }, 50);
+          setExitingSlide(null);
+        }, 600);
       };
 
       const prevSlide = () => {
+        setExitingSlide(slides[currentSlide]);
         setAnimate(true);
         setTimeout(() => {
           setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
           setAnimate(false);
-        }, 50);
+          setExitingSlide(null);
+        }, 600);
       };
 
       // Get next slide index
@@ -173,6 +187,19 @@
             <div className="flex flex-col lg:flex-row items-center lg:items-start space-x-0 lg:space-x-4">
               {/* Current Slide */}
               <div className="relative w-full lg:w-3/5">
+                {exitingSlide && (
+                  <div className="absolute inset-0 slide-exit">
+                    <img
+                      src={exitingSlide.img}
+                      alt={exitingSlide.title}
+                      className="w-full h-96 object-cover rounded-lg shadow-lg"
+                    />
+                    <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-4 rounded">
+                      <h2 className="text-2xl font-bold">{exitingSlide.title}</h2>
+                      <p>{exitingSlide.desc}</p>
+                    </div>
+                  </div>
+                )}
                 <div className={animate ? "slide-active" : ""}>
                   <img
                     src={slides[currentSlide].img}
